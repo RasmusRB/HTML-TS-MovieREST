@@ -5,24 +5,214 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-
-  <title>Hello app</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/darkly/bootstrap.min.css"
+    integrity="sha512-U4WaRm7u3LeQy69FgQcz1CBxA32VsI/OeUdcCC5iBbwdjbfRcE+9E2wnJjXPO/bRfrClPTDYTLgBOekcTiBEgQ=="
+    crossorigin="anonymous" />
+  <title>Movie lib</title>
 </head>
 
-<body>
-  <h1>Hello</h1>
-  <div id="app">
-    <input v-model="name" placeholder="Name">
-    <button v-on:click="sayHello()" class="btn btn-primary">Say hello</button>
-    <div>{{ greeting }}</div>
-  </div>
+<style>
+  .navbar {
+    margin-left: 5%;
+    margin-right: 5%;
+  }
 
+  .breadcrumb {
+    margin-left: 5%;
+    margin-right: 5%;
+  }
+
+  .card {
+    margin-left: 5%;
+    margin-right: 5%;
+    font-family: monospace;
+    padding-bottom: 5%;
+    overflow: hidden;
+  }
+
+  .jumbotron {
+    margin-left: 5%;
+    margin-right: 5%;
+    max-height: 200px;
+  }
+
+  .jumbotron>h1 {
+    font-family: monospace;
+    font-size: x-large;
+  }
+
+  .jumbotron>p {
+    font-family: monospace;
+    font-size: small;
+  }
+
+  .form-group {
+    font-family: monospace;
+  }
+
+  .col-form-label {
+    font-size: x-small;
+    font-family: monospace;
+  }
+
+  .form-control {
+    width: auto;
+    display: inline-block;
+    padding: 0px;
+  }
+
+  ol {
+    background: #303030;
+    margin-bottom: 10px;
+    text-align: left;
+    list-style-position: inside;
+  }
+
+  button {
+    width: 115px;
+    height: 40px;
+  }
+  
+  ::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* make scrollbar transparent */
+}
+</style>
+
+<body>
+  <div id="app">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+        aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarColor01">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Movies
+              <span class="sr-only">(current)</span>
+            </a>
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="text" placeholder="Search">
+          <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+        </form>
+      </div>
+    </nav>
+
+    <br>
+
+    <div class="jumbotron">
+      <h1 class="display-3">Hello, world!</h1>
+      <p class="lead">This is a simple hero unit, a simple jumbotron-style component to introduce this movie library.
+      </p>
+    </div>
+
+    <div class="card text-white bg-primary mb-3" style="max-height: 250px; overflow-y: scroll;">
+      <div class="card-header" >Get movie data</div>
+      <div class="card-body">
+        <button v-on:click="getAllMovies" class="btn btn-secondary">Get</button>
+        <button v-on:click="getById(idToGetBy)" class="btn btn-secondary">Get by id</button>
+        <label class="col-form-label col-form-label-sm" for="inputSmall">Id: </label>
+          <input class="form-control form-control-sm" type="number" v-model="idToGetBy">
+        <br>
+        <br>
+        <ol v-if="singleMovie" style="padding: 20px;">
+          Id : {{singleMovie.id}} <br> Title : {{singleMovie.title}} <br> Director : {{ singleMovie.director}} <br> Released : {{singleMovie.releaseYear}} <br>
+          Genre : {{singleMovie.genre}} <br> Imdb Rating : {{singleMovie.imdbRating}} <br> Runtime : {{singleMovie.runTime}} <br> Note : {{singleMovie.note}}
+          </ol>
+        </ol>
+        <br>
+        <br>
+        <ol v-for="movie in movies" style="padding: 20px;">
+          Id : {{movie.id}}
+          <br>Title : {{movie.title}}
+          <br> Director : {{movie.director}}
+          <br> Released : {{movie.releaseYear}}
+          <br> Genre : {{movie.genre}}
+          <br> Imdb Rating : {{movie.imdbRating}}
+          <br> Runtime : {{movie.runTime}}
+          <br> Note : {{movie.note}}
+        </ol>
+        <button id="clearAllMoviesButton" v-on:click="clearAllMovies" class="btn btn-danger">Clear</button>
+        <br>
+        <br>
+      </div>
+    </div>
+
+    <div class="card text-white bg-primary mb-3" style="max-height: 150px;">
+      <div class="card-header">Post movie data</div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Title: </label>
+          <input class="form-control form-control-sm" type="text" v-model="addData.title">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Director: </label>
+          <input class="form-control form-control-sm" type="text" v-model="addData.director">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Released: </label>
+          <input class="form-control form-control-sm" type="number" v-model.number="addData.releaseYear">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Genre: </label>
+          <input class="form-control form-control-sm" type="text" v-model="addData.genre">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Imdb Rating: </label>
+          <input class="form-control form-control-sm" type="number" v-model.number="addData.imdbRating">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Runtime: </label>
+          <input class="form-control form-control-sm" type="number" v-model.number="addData.runTime">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Note: </label>
+          <input class="form-control form-control-sm" type="text" v-model="addData.note">
+          <button v-on:click="postMovie" class="btn btn-secondary">Add</button>
+        </div>
+        <div> {{addMessage}} </div>
+      </div>
+    </div>
+
+    <div class="card text-white bg-primary mb-3" style="max-height: 150px;">
+      <div class="card-header">Delete movie data</div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Delete Id: </label>
+          <input class="form-control form-control-sm" type="number" v-model.number="deleteId">
+          <button v-on:click="deleteMovie(deleteId)" class="btn btn-danger">Delete</button>
+          {{deleteMessage}}
+        </div>
+      </div>
+    </div>
+
+    <div class="card text-white bg-primary mb-3" style="max-height: 160px;">
+      <div class="card-header">Update movie data</div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Id: </label>
+          <input class="form-control form-control-sm" type="number" v-model.number="updateData.id">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Title: </label>
+          <input class="form-control form-control-sm" type="text" v-model="updateData.title">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Director: </label>
+          <input class="form-control form-control-sm" type="text" v-model="updateData.director">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Released: </label>
+          <input class="form-control form-control-sm" type="number" v-model.number="updateData.releaseYear">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Genre: </label>
+          <input class="form-control form-control-sm" type="text" v-model="updateData.genre">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Imdb Rating: </label>
+          <input class="form-control form-control-sm" type="number" v-model.number="updateData.imdbRating">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Runtime: </label>
+          <input class="form-control form-control-sm" type="number" v-model.number="updateData.runTime">
+          <label class="col-form-label col-form-label-sm" for="inputSmall">Note: </label>
+          <input class="form-control form-control-sm" type="text" v-model="updateData.note">
+          <br>
+          <br>
+          <button v-on:click="updateMovie" class="btn btn-secondary">Update</button>
+        </div>
+      </div>
+    </div>
+
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active"><a href="#">Home</a></li>
+    </ol>
+  </div>
   <script src="bundle.js"></script>
 </body>
 
